@@ -1,0 +1,29 @@
+<h1>{{ question.question_text }}</h1>
+
+{% if error_message %}<p><strong>
+    {{ error_message }}
+</strong></p>{% endif %}
+
+{#{% url 'vote' question_id %}#}
+{#이거 안헷갈리게 조심해야한다 위에 봐라 question_id 이걸로 왜했냐면#}
+{#자동완성 해주니까 저걸로 한거임 생각없이 넘긴 값은 question 이잖아 ㅋㅋ#}
+{#크 클라스#}
+<form action="{% url 'vote' question.id %}" method="post">
+{#이값은 진짜 있는걸 넣어주는거임 멍청하게#}
+{#여기서 question.id 는 유알엘에 되어있는 ?#}
+{#    P<question_id> 아마 여기에 있는걸로 들어가는 듯#}
+    {% csrf_token %}
+    {% for choice in question.choice_set.all %}
+        {# 여기서 question 고작 레코드 하나임 그러나 얘를 참조 하고있는 #}
+        {# choice의 수는 꽤 많을 거야#}
+        {# 그걸 뽑아내는 메서드야 헷갈리지 말자 진짜 #}
+        <input type="radio" name="choice" id="choice{{ forloop.counter }}"
+               value="{{ choice.id }}"/>
+    <label for="choice{{ forloop.counter }}">{{ choice.choice.text }}
+    </label><br />
+    {% endfor %}
+    <input type="submit" value="Vote">
+
+
+
+</form>

@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+#이거때문에 여기서 부터 읽는거임 크 클라스 시작을 여기서 조져야함 크 클라스
 ROOT_URLCONF = 'myfirst.urls'
 
 TEMPLATES = [
