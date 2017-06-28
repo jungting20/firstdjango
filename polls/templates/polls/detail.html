@@ -1,10 +1,10 @@
 <h1>{{ question.question_text }}</h1>
-
+{#파이썬은 자료형이 비어있으면 거짓이고 채워져있으면 참임 이것도 기억하자#}
 {% if error_message %}<p><strong>
     {{ error_message }}
 </strong></p>{% endif %}
 
-{#{% url 'vote' question_id %}#}
+{#{% url 'vote' question_id %} 에러나서 한참 찾음 ㅋㅋㅋ ㅅㅂ#}
 {#이거 안헷갈리게 조심해야한다 위에 봐라 question_id 이걸로 왜했냐면#}
 {#자동완성 해주니까 저걸로 한거임 생각없이 넘긴 값은 question 이잖아 ㅋㅋ#}
 {#크 클라스#}

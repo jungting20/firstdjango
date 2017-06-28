@@ -1,25 +1,53 @@
 from django.shortcuts import render,get_object_or_404
+from django.views import generic
 from polls.models import Question,Choice
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.template import RequestContext,loader
 
 
 
-def index(request):
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    return render(request,'polls/index.html',context={
-        'latest_question_list':latest_question_list
-    })
 
 
-def detail(request,question_id):
-    question = get_object_or_404(Question,pk=question_id)
-    return render(request,'polls/detail.html',{'question':question})
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    # model = Question 이게 결국 queryset = Question.objects.all()
+    #이거랑 같음
+    #만약 넘길때 pk가 지정 되어있지 않으면 그냥 기본으로
+    #select * from Question 한게 모델에 저장이 된다
+    #결국 위에 주석 4줄이 사실상 같은말 ㅋ 뭐한 거지
+    #그리고 모델 속성 값을 지정해 주면 context_object_name = 'latest_question_list'
+    #이부분을 해주지 않아도 question 으로 html에서 부를 수 있다
+    #지정해주면 저걸로 오버라이딩됨
 
-def results(request,question_id):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question_id)
+    #조건 줘서 리스트 뽑을거면 queryset 해서 뽑으면됨
+    #def get_queryset도 같음
+    #와 장고 엄청나구만
+    queryset = Question.objects.order_by('-pub_date')[:5]
+    #이걸 써도 같음 ㅋ 이렇게 하는게 더 나은듯 근데 왜 굳이 저렇게 쓰는거지
+    # def get_queryset(self):
+    #      return Question.objects.order_by('-pub_date')[:5]
+    context_object_name = 'latest_question_list'
+    #이걸 지정 해준건 def get_queryset 를 오버라이드 해서
+    #그 뽑아온 리스트를 저장 할 이름이 필요함 아니면 모르니까 ㅋ
+    #그니까 def get_queryset으로 받아온 리스트는 이름을 지정해 줘야한다
+
+
+#pk로 넘기면 모델만 지정해주면 알아서 pk로 검색해서 쳐넣음 리얼
+#장고파워임?
+#저 템플릿 네임 오버라이드 안해주면 디폴트값으로 찾아감 디폴트값이 존재하긴하는 듯
+class DetailView(generic.DetailView):
+    #이거 스프링처럼 컨텍스트 오브젝트 네임 저거 지정 안해주면
+    #Question 이면 question으로 리퀘스트 영역에 저장됨!! 크
+    #스프링 덕분에 이해가 쉽다
+    model = Question
+    template_name = 'polls/detail.html'
+
+
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/results.html'
+
+
 
 def vote(request,question_id):
     p = get_object_or_404(Question, pk=question_id)
