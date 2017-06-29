@@ -1,9 +1,8 @@
-from django.test import TestCase
 import datetime
 from django.utils import timezone
 from django.test import TestCase
-
 from polls.models import Question
+from django.core.urlresolvers import reverse
 
 class QuestionMethodTests(TestCase):
 
@@ -30,3 +29,28 @@ class QuestionMethodTests(TestCase):
         recent_question = Question(pub_date=time)
 
         self.assertEqual(recent_question.was_published_recently(), True)
+
+def create_question(question_text, days):
+    time = timezone.now() + datetime.timezone(days=days)
+    return Question.objects.create(question_text = question_text ,
+                                   pub_date=time)
+
+class QuestionViewTests(TestCase):
+
+    #self는 이걸 의미 크 클라스 TestCase 클래스
+    def test_index_view_with_no_question(self):
+
+        response = self.client.get(reverse('index'))
+
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,"No polls are available.")
+        self.assertQuerysetEqual(response.context['latest_question_list'],[])
+
+    def test_index_view_with_a_past_question(self):
+        create_question(question_text="Past question",days=-30)
+
+        response = self.client.get(reverse('index'))
+        self.assertQuerysetEqual(response.context['latest_question_list'],
+                                 ['<Question: Past question.>'])
+
+

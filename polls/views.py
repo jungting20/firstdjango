@@ -3,9 +3,7 @@ from django.views import generic
 from polls.models import Question,Choice
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-
-
-
+from django.utils import timezone
 
 
 class IndexView(generic.ListView):
@@ -22,7 +20,12 @@ class IndexView(generic.ListView):
     #조건 줘서 리스트 뽑을거면 queryset 해서 뽑으면됨
     #def get_queryset도 같음
     #와 장고 엄청나구만
-    queryset = Question.objects.order_by('-pub_date')[:5]
+    #ㅋ 작거나 같다 less than or equal 이래서 lte ㅋ
+    #너무나도 엄청나다
+    #str(Question.objects.filter(pub_date__in=timezone.now()).query)이거해보면
+    #select ... 해서 쿼리문 나옴 ㅋ 정말로 엄청남
+    queryset = Question.objects.filter(pub_date__lte=timezone.now()
+                                       ).order_by('-pub_date')[:5]
     #이걸 써도 같음 ㅋ 이렇게 하는게 더 나은듯 근데 왜 굳이 저렇게 쓰는거지
     # def get_queryset(self):
     #      return Question.objects.order_by('-pub_date')[:5]
